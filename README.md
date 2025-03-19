@@ -8,7 +8,7 @@ Este repositório contém trabalhos e exercícios feitos durante o meu quinto se
 
 - [Projeto e Análise de Algoritmos](/Projeto_e_Analise_de_Algoritmos/)
 - [Sistemas Operacionais](/Sistemas_Operacionais/)
-
+- [Engenharia de Software II](/Engenharia_de_Software_II/)
 
 ## 📚 Material
 Livros e repositórios usados durante os estudos para este semestre.
