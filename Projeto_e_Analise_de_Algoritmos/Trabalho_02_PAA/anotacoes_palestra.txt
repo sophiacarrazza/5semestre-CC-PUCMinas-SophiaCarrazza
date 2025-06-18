@@ -1,0 +1,60 @@
+trabalho 2 de paa
+
+Dr Humberto Torres Marcos Neto
+Antonio Alfredo Ferreira Loureiro
+
+
+“Como se preparar para o Brave New World?”
+Admirável mundo novo -> livro que se passa em Londres, no ano 632 DF (Depois de Ford), antecipando desenvolvimentos em tecnologias reprodutivas, aprendizado durante o sono, manipulação psicológica e condicionamento clássico.
+
+1- não perdendo nossa humanidade
+⁃ essência do ser humano, suas qualidades e condições intrínsecas
+⁃ qualidade de ser gentil, atencioso e compreensivo com os outros
+
+questões distópicas do mundo
+1a e 2a revoluções industriais
+2a muda o comportamento da sociedade. Principalmente europa, eua e japão
+
+3a - informática, biotecnologia, aumento da competitividade
+
+4a - técnicas de ia, realidade virtual e aumentada, biotecnologia, transformações profundas na forma como vivemos e nos conectamos
+⁃ transformação de todos os setores da economia
+⁃ mercado de trabalho com necessidade de novas habilidades
+⁃ redes, sistemas ciberfisicos, ia, etc
+⁃ influência de novas tecnologias surgindo simultaneamente
+⁃ princípios da física para criar redes neurais profundas e modelos de IA
+⁃ antibióticos
+
+conhecer e entender as tecnologias que nos, seres humanos, passaremos a usar para sempre
+
+⁃ estudar muito
+⁃ ter uma visão crítica dessas tecnologias
+
+teoria da inteligência múltipla
+oq eh IA
+IA eh disruptiva
+IA responsável
+uso da IA
+
+Machine Learning -> Deep Learning-> Foundation Models
+
+Domain Specific Foundation Models
+modelos específicos que demonstram alto desempenho cem tarefas como NLP, geração de texto, resposta, etc
+
+Foundation Model -> Modelos multimodais
+⁃ baseados em arquiteturas como transformers
+⁃ apresentam dificuldades em respostas muito técnicas ou normativas (respostas alucinadas)
+⁃ domínios como medicina, direito, engenharia, etc, exigem precisão técnica e conhecimento profundo (podem gerar imprecisão)
+
+técnicas para especificar modelos generalistas em específicos:
+⁃ treinar esses modelos usando os dados mais específicos
+⁃ fine tuning
+
+torna-se pertinente o uso de DSFMs
+
+desafios:
+⁃ obtenção e curadoria dos dados
+⁃ adaptar novas arquiteturas
+⁃ custo computacional
+⁃ avaliação dos modelos especializados
+⁃ questões éticas
