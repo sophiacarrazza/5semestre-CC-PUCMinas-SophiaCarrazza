@@ -1,0 +1,344 @@
+\documentclass{sbc2023}%
+
+\usepackage{graphicx}
+%\usepackage[utf8]{inputenc}
+\usepackage[misc,geometry]{ifsym} 
+\usepackage{fontspec}
+\usepackage{fontawesome}
+\usepackage{academicons}
+\usepackage{color}
+\usepackage{hyperref} 
+\usepackage{aas_macros}
+\usepackage[bottom]{footmisc}
+\usepackage{supertabular}
+\usepackage{afterpage}
+\usepackage{url}
+\usepackage{pifont}
+\usepackage{multicol}
+\usepackage{multirow}
+\documentclass{article}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\setcitestyle{square}
+
+\definecolor{orcidlogo}{rgb}{0.37,0.48,0.13}
+\definecolor{unilogo}{rgb}{0.16, 0.26, 0.58}
+\definecolor{maillogo}{rgb}{0.58, 0.16, 0.26}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.0}
+\hypersetup{colorlinks,breaklinks,
+            linkcolor=darkblue,urlcolor=darkblue,
+            anchorcolor=darkblue,citecolor=darkblue}
+%\hypersetup{colorlinks,citecolor=blue,linkcolor=blue,urlcolor=blue}
+
+%%%%%%% IMPORTANT: We disable hyperlinks by default with this line, to avoid the error "\pdfendlink ended up in different nesting level" while writing.
+%\hypersetup{draft}
+
+\jid{JBCS}
+\jtitle{PUC-MINAS, 2025}
+\jyear{202X}
+
+
+\title[Trabalho Final - Projeto e Análise de Algoritmos]{Trabalho Final - Projeto e Análise de Algoritmos}
+
+%THE ORCID IS MANDATORY FOR EACH AUTHOR IN JBCS
+\author[PAA GRUPO]{
+\affil{\textbf{Gabriel Samarane}~\href{https://orcid.org/0000-0002-0339-6624}{\textcolor{orcidlogo}{\aiOrcid}}~\textcolor{blue}{\faEnvelopeO}~~[~\textbf{Pontifícia Universidade Católica de Minas Gerais (PUCMG)}~|\href{mailto:viterbo@ic.uff.br}{~\textbf{\textit{samarane.gabriel@gmail.com}}}~]}
+
+\affil{\textbf{João Lucas Curi}~\href{https://orcid.org/0000-0002-7110-2026}{\textcolor{orcidlogo}{\aiOrcid}}~~[~\textbf{Pontifícia Universidade Católica de Minas Gerais (PUCMG)}~|\href{mailto:clodis.boscarioli@unioeste.br}{~\textbf{\textit{joaolucascuri@gmail.com}}}~]}
+
+\affil{\textbf{João Madeira}~\href{https://orcid.org/0000-0003-3052-3016}{\textcolor{orcidlogo}{\aiOrcid}}~~[~\textbf{Pontifícia Universidade Católica de Minas Gerais (PUCMG)}~|\href{mailto:rpereira@inf.ufpr.br}{~\textbf{\textit{joaomadeira1208@gmail.com}}}~]}
+
+\affil{\textbf{Sophia Carrazza}~\href{https://orcid.org/0000-0002-2431-8457}{\textcolor{orcidlogo}{\aiOrcid}}~~[~\textbf{Pontifícia Universidade Católica de Minas Gerais (PUCMG)~}|\href{mailto:cmaciel@ufmt.br}{~\textbf{\textit{sophiacarrazza7@gmail.com}}}~]}
+
+}
+
+\begin{document}
+
+\begin{frontmatter}
+\maketitle
+
+\begin{mail}
+Departamento de Ciência da Computação (DCC) -- Pontifícia Universidade Católica de Minas Gerais (PUCMG)
+  Caixa Postal 2071 -- 30.535-901 -- Belo Horizonte -- MG -- Brasil 
+\end{mail}
+
+
+
+\begin{abstract}
+\textbf{Abstract.~}
+\noindent Visando a influência de métodos para a medida de distância de edição de árvores (TED), este estudo apresenta a implementação, em C++, do algoritmo de TED proposto por Zhang & Shasha (1989) e de um segundo método guloso proposto pelo grupo. Comparamos os custos computacionais (em tempo de execução e uso de memória) de ambos algoritmos conforme o número de vértices das árvores de teste aumenta.
+
+\end{abstract}
+
+\begin{keywords}
+Distância de Edição de Árvores, Algoritmo de Zhang & Shasha, Complexidade de Tempo e Espaço
+\end{keywords}
+
+%\begin{license}
+%Published under the Creative Commons Attribution 4.0 International Public License (CC BY 4.0)
+%\end{license}
+
+\end{frontmatter}
+
+
+\section{Introdução}
+\label{sec:intro}
+
+A distância de edição de árvores (TED) permanece reconhecida como uma técnica revolucionária que modernizou áreas como bioinformática e análise de imagens, fornecendo uma métrica quantitativa para dissimilaridade estrutural hierárquica. 
+
+Dados estruturados em árvore constantemente são encontrados na bioinformática. Estruturas secundárias de RNA, glicanos e árvores filogenéticas geralmente possuem estruturas em árvore \citep{akutsu_tree_2010}, por exemplo. Dessa forma, essa medida foi capaz de impactar o estudo dessas estruturas, na identificação de similaridades de árvores e problemas relacionados. A metodologia desenvolvida por \citeauthor{zhang1989}, permanece referência por seu equilíbrio entre eficiência e precisão. Alternativas como AP-TED (sequencial) e MC-TED (multicore) buscam otimizações \citep{fan_x-ted_2024}, mas enfrentam desafios de dependência de dados e uso de recursos.
+
+Este estudo, portanto, propõe uma aplicação da solução proposta pelo trabalho de \citeauthor{zhang1989}, em linguagem C++, e uma solução gulosa, além de uma comparação entre ambos algoritmos.
+
+\section{Background}
+\subsection{Distância de edição de árvores (TED)}
+Uma árvore é um grafo $G = (V, E)$ onde $V$ é um conjunto finito de vértices, $E \subseteq V \times V$ é um conjunto de arestas e $G$ é não-direcionado, conexo e acíclico.
+
+Uma TED entre duas árvores T1 e T2 pode ser definida como o número mínimo de vértices que precisam ser substituídos, excluídos ou inseridos em T1 para obter T2.
+
+%Os algoritmos para cálculo da distância de edição de árvores podem ser classificados em um número de categorias. São algumas delas:
+
+%\begin{itemize}
+%\item \textbf{Top-down}  — Iniciam pela raiz e processam os nós em direção às folhas, adequadas para decomposições;
+
+%\item \textbf{Bottom-up}  — Começam pelas folhas e propagam resultados até a raiz. Tem como exemplo o algoritmo de \cite{zhang1989}, que calcula distâncias das subárvores menores para as maiores;
+
+ %\item \textbf{Híbridas}  — Combinam ambas as abordagens para otimizar diferentes características do problema, como a paralelização.
+%\end{itemize}
+
+\subsection{TED e Aplicações na Bioinformática}
+A representação de dados biológicos como árvores ordenadas é intrínseca a própria natureza biológica, justificando o uso de algoritmos de Distância de Edição de Árvores (TED). Essa forma estrutural permite comparação e análise estrutural de entidades biológicas de alta complexidade, já que os dados biológicos se encaixam naturalmente nessa representação. O RNA secundário, por exemplo, representa a estrutura bidimensional de uma molécula de RNA, caracterizada por regiões de pareamento de bases e regiões de fita simples. Os pares de bases são modelados como nós internos e regiões de fita simples se tornam folhas \cite{Marchand}. As Filogenias, por outro lado, descrevem as relações evolutivas entre diferentes espécies, genes ou outras entidades biológicas. Elas são geralmente árvores com folhas rotuladas por espécies \citep{felsenstein_inferring_2004}.
+
+
+%\item \textbf{Glicanos} — Os glicanos, ou carboidratos, são macromoléculas complexas que desempenham papéis cruciais em diversas funções biológicas. Sua estrutura é representada como cada monossacarídeo sendo um nó rotulado, com árvores rasas mas bastante ramificadas, utilizando TEDs para classificá-los\citep{glycomics}.
+
+
+\subsection{Programação Dinâmica e Problemas de Otimização}
+
+Programação dinâmica (PD) é uma técnica que resolve problemas de otimização
+quebrando-os em subproblemas sobrepostos e aplicando o \emph{princípio da
+optimalidade}: a solução ótima global pode ser construída a partir de soluções
+ótimas de subpartes. Dois paradigmas, comuns para cálculo de distância de edição de árvores, são resoluções naturais de programação dinâmica \citep{fan_x-ted_2024}: o top-down (memoização), resolvendo subproblemas sob demanda, armazenando resultados em tabela para evitar recomputação, e o bottom-up (iterativo), preenchendo a tabela em ordem não-decrescente de tamanho, garantindo que cada entrada dependa apenas de valores já calculados.
+
+No contexto da TED, cada subproblema corresponde ao menor custo para converter
+uma subárvore de \(T_1\) em outra de \(T_2\). O algoritmo de \cite{zhang1989}
+define uma recorrência sobre pares de índices de pós-ordem e preenche uma
+matriz de \(|T_1|\times|T_2|\) posições; a resposta final é recuperada na
+célula \((\,|T_1|, |T_2|\,)\). Essa abordagem reduz a busca ingênua
+exponencial para tempo \(O(n^3)\) e espaço \(O(n^2)\).
+
+Algoritmos recentes, como o APTED \citep{AP-TED}, mantêm o modelo de PD, porém exploram
+heurísticas de poda e reuso de subestruturas para diminuir o número efetivo de
+subproblemas, aproximando o custo de execução de \(O(n^2)\) na prática.
+
+Assim, a Programação Dinâmica é essencial para justificar a formulação do
+algoritmo clássico.
+
+\section{Trabalhos Relacionados}
+
+No contexto da criação de diversas abordagens propostas para a distância de edição de árvores, alguns trabalhos se destacam para este estudo. 
+
+O algoritmo de \citeauthor{zhang1989} emprega uma abordagem de programação dinâmica que, ao contrário dos seus predecessores, considera de forma estratégica a distância entre florestas (conjuntos de árvores) ordenadas como uma etapa intermediária para simplificar o cálculo da distância entre árvores. O projeto de Zhang e Shasha também é eficientemente paralelizado, alcançando uma complexidade temporal de O(|T1| + |T2|). 
+
+Já o trabalho de \cite{sidorov_computing_2015}, propõe a aplicação da TED para o cálculo de similaridade entre frases, com objetivo de detectar similaridade suave entre textos, uma tarefa de Processamento de Linguagem Natural (PLN). Este estudo também comparou a implementação feita por TED com a utilização de N-gramas sintáticos, insuficientes para resolver essas tarefas com precisão. Assim, os resultados demonstraram que a medida TED pode ser utilizada de forma eficaz e vantajosa em aplicações de outras áreas além da biotecnologia.
+
+%A técnica de \citeauthor{fan_x-ted_2024}, X-TED, aborda principalmente os gargalos na computação da Distância de Edição de Árvores (TED). Este framework de computação paralela, implementado em GPUs, leva como objetivo superar as limitações identificadas nos algoritmos TED paralelos existentes, aproveitando dinâmicas da programação dinâmica (DP) para identificar relações de dependência e gerenciar os estágios de processamento, otimizando o uso dos núcleos da GPU e da memória limitada da máquina.
+
+\section{Metodologia}\label{sec:metodologia}
+Esta seção descreve a implementação assim como as justificativas associadas ao algoritmo de abordagem gulosa não ótima desenvolvida, em comparação com o método exato de \cite{zhang1989}(\textbf{ZS}).  Dividimos a explicação em cinco subseções para facilitar a reprodução dos testes.
+
+\subsection{Abordagem Gulosa}\label{ssec:alg-visao}
+
+Diferente do algoritmo de Zhang (\cite{zhang1989}), que percorre as árvores em ordem \textit{pós-ordem}, a abordagem gulosa apresentada visita os nós em ordem \textit{pré-ordem}, ou seja, o nó pai é processado antes de seus filhos.
+
+O algoritmo percorre as árvores recursivamente, comparando os nós em paralelo, sempre na ordem em que os filhos aparecem nas respectivas listas. Para cada par de nós, calcula-se um custo de substituição caso suas etiquetas sejam diferentes. Em seguida, os filhos são comparados um a um, na mesma posição (alinhamento posicional).
+
+Ele é considerado guloso porque toma decisões imediatas, comparando diretamente os filhos de cada nó em posições simétricas, sem reordenar nem avaliar alternativas. As decisões são locais e independentes. Cada par de nós é avaliado com base apenas no estado atual, sem considerar o impacto global ou depender de decisões anteriores.
+
+
+\subsubsection{Análise do Algoritmo}
+
+Sejam
+\(n = |T_{1}|\) e \(m = |T_{2}|\) o número de vértices das árvores
+\(T_{1}\) e \(T_{2}\), respectivamente, e
+\(h = \max\{\operatorname{altura}(T_{1}), \operatorname{altura}(T_{2})\}\).
+
+\begin{itemize}
+
+  \item \textbf{Complexidade de tempo:} \(\mathcal{O}(n + m)\).
+  \item \textbf{Complexidade de espaço:} \(\mathcal{O}(h)\).
+  \item \textbf{Limitação:} não garante a distância de edição mínima; produz apenas uma estimativa \(d_{\text{gulosa}}\).
+\end{itemize}
+
+Para constatar a complexidade de tempo, analisou-se o comportamento do algoritmo em relação ao caminhamento realizado nas árvores. Como a estratégia gulosa apenas caminha para frente, ou seja, verifica um vértice após o outro sem retornar nem reavaliar subárvores ou decisões anteriores, os vértices de ambas as árvores são completamente percorridos. Assim, conclui-se que o número de operações realizadas pelo algoritmo é proporcional à soma da quantidade de vértices das duas árvores.
+
+No que diz respeito à complexidade de espaço, a análise considera o uso da pilha de chamadas recursivas. Como a recursão acompanha a estrutura das árvores e avança por seus ramos, a profundidade máxima da pilha será limitada pela altura da árvore mais alta. Dessa forma, a complexidade de espaço do algoritmo é proporcional à altura das árvores envolvidas.
+
+\subsection{Não Otimalidade da Abordagem Gulosa}\label{ssec:instancias}
+
+Para demonstrar a não otimalidade do algoritmo guloso implementado, utilizou-se como referência o algoritmo ótimo descrito em \citeauthor{zhang1989}. A abordagem consistiu em executar ambos os algoritmos sobre as mesmas instâncias de árvores e comparar os resultados obtidos em termos da distância de edição calculada.
+
+As árvores utilizadas para o experimento estão representadas na imagem \ref{naootimalidade}.
+
+O algoritmo ótimo retornou um custo total de 15 operações, enquanto o algoritmo guloso produziu um resultado de 17 operações. Esse exemplo evidencia, por meio de um contraexemplo concreto, que o algoritmo guloso não garante a obtenção da distância mínima, confirmando assim sua natureza não ótima.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=\columnwidth]{naootimalidade.png}
+\caption{Contra-exemplo de Otimalidade do Algoritmo Guloso}\label{naootimalidade}
+\end{center}
+\end{figure}
+
+\subsection{Métricas Avaliadas}\label{ssec:metricas}
+
+Esta seção descreve as métricas de avaliação entre os dois algoritmos.
+
+Para os testes, os algoritmos receberam como entrada pares de árvores geradas aleatoriamente, restringidas em 50 vértices no máximo e seguindo uma distribuição normal. Foram testadas 10.000 pares distintos de árvores.
+
+\begin{enumerate}
+  \item \textbf{Erro relativo de distância}  
+        \[
+          \text{RE}=\frac{d_\text{gulosa}-d_\text{ZS}}{d_\text{ZS}}\times100\%
+        \]
+  \item \textbf{Tempo Médio de Execução}: Comparação entre tempo médio de execução dos dois algoritmos sob as mesmas árvores de teste.
+  \item \textbf{Uso Médio de Memória}: Comparação entre uso médio de memória dos dois algoritmos sob as mesmas árvores de teste.
+  \item \textbf{Distância Média de Edição}: Comparação entre as médias de distância de edição dos dois algoritmos sobre as mesmas árvores de teste.
+
+
+\end{enumerate}
+
+\subsection{Justificativas para a Abordagem Gulosa}\label{ssec:justificativa}
+\begin{enumerate}
+  \item \textbf{Complexidade Computacional}: aplicações em, por exemplo, bioinformática frequentemente
+        lidam com milhares de árvores; um algoritmo \(O(n^{3})\)
+        torna-se inviável. A abordagem gulosa, por sua vez, apresenta complexidade 
+        significativamente menor, operando em \(O(n)\), tornando-a viável para grandes volumes de dados.
+  
+  \item \textbf{Facilidade de Implementação}: o algoritmo guloso possui estrutura simples e direta,
+        o que facilita sua implementação, manutenção e adaptação para diferentes formatos de dados.
+        
+  \item \textbf{Baixo Consumo de Memória}: a estratégia gulosa exige apenas memória proporcional
+        à altura das árvores, reduzindo o custo espacial e permitindo execução mesmo em ambientes com recursos limitados.
+        
+\end{enumerate}
+
+
+Os resultados numéricos e a análise detalhada desses critérios são
+apresentados na Seção Resultados.
+
+\subsection{Implementação do Algoritmo Guloso}
+
+Esta seção descreve, em pseudo-código, a implementação do algoritmo guloso.
+
+\subsubsection{Pseudo-Código}
+
+\begin{algorithm}[H]
+\caption{TED-Guloso}
+\begin{algorithmic}[1]
+\Function{CompararArvoresGuloso}{n1, n2}
+    \If{n1 e n2 são nulos}
+        \State \Return 0
+    \ElsIf{n1 é nulo}
+        \State \Return custo de inserção + soma das chamadas recursivas para os filhos de n2
+    \ElsIf{n2 é nulo}
+        \State \Return custo de remoção + soma das chamadas recursivas para os filhos de n1
+    \Else
+        \State $custo \gets$ 0 se $n1.label = n2.label$, senão custo de substituição
+        \State Alinhar os filhos de n1 e n2 ordenados
+        \State Adicionar ao custo o resultado das chamadas recursivas para:
+        \begin{itemize}
+            \item pares de filhos alinhados
+            \item filhos restantes de n1 (remoções)
+            \item filhos restantes de n2 (inserções)
+        \end{itemize}
+        \State \Return $custo$
+    \EndIf
+\EndFunction
+
+\Function{TED-Guloso}{a1, a2}
+    \State \Return \Call{CompararArvoresGuloso}{raiz de a1, raiz de a2}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+O algoritmo não faz uso de estruturas auxiliares explícitas além da própria definição da árvore. Toda a execução ocorre por meio de chamadas recursivas, utilizando implicitamente a pilha de chamadas da linguagem como mecanismo de controle de fluxo. 
+
+\subsection{Implementação do Algoritmo de Zhang e Shasha}
+\label{subsec:tree-edit-distance}
+
+A implementação do algoritmo de distância de edição de árvores seguiu o modelo proposto por \cite{zhang1989}, dividido em duas etapas principais: o pré-processamento das árvores e o cálculo da distância propriamente dito.
+
+\subsubsection{Pré-processamento}
+Nesta etapa inicial, as duas árvores de entrada são convertidas para uma numeração em pós-ordem. Para cada nó \(i\), são armazenadas duas informações importantes: o índice de sua folha mais à esquerda, \(l(i)\), e seus ancestrais. Em seguida, é calculado o conjunto \(\text{LR\_keyroots}(T)\) para cada árvore \(T\), que identifica as raízes de subárvores distintas. Esse conjunto reduz o número de comparações necessárias, otimizando o desempenho do algoritmo.
+
+\subsubsection{Etapa Principal: função \texttt{treedist(i, j)}}
+A parte central do algoritmo envolve dois laços que percorrem os conjuntos \(\text{LR\_keyroots}\) das duas árvores. Para cada par de nós \(i\) e \(j\), a função \texttt{treedist(i, j)} calcula a distância entre as subárvores enraizadas nesses nós.
+
+O cálculo é feito por meio de programação dinâmica, preenchendo uma matriz de distâncias entre as subárvores de \(T_1\) e \(T_2\). Quando os nós \(i\) e \(j\) são as raízes de subárvores completas, a distância entre elas é definida como o mínimo entre as operações de remoção, inserção e substituição de nós. Caso contrário, a função \texttt{treedist} é chamada recursivamente para resolver os casos menores.
+
+Essa estratégia permite calcular a distância total entre as duas árvores com um bom equilíbrio entre precisão e eficiência.
+
+A implementação resultou em uma complexidade de tempo proporcional a
+\[
+O(|T_1| \times |T_2| \times \min(\text{profundidade}, \text{número de folhas})),
+\]
+e uma complexidade de espaço quadrática, ou seja, \(O(n^2)\), onde \(n\) representa o número de nós.
+
+
+\section{Resultados}
+
+Esta seção apresenta os resultados comparativos entre o algoritmo de Zhang e Shasha (ZS) e o método guloso proposto. A Tabela \ref{tab:analise_comparativa} sumariza essas comparações de desempenho. O erro relativo calculado para o parâmetro de distância de edição foi de 36{,}38\%.
+ para a o parâmetro distãncia de edição foi calculado em: 36.38\%.
+
+\begin{table}[htbp]
+\centering
+\caption{Análise comparativa de desempenho: Zhang Shasha vs. Guloso}
+\label{tab:analise_comparativa}
+\begin{tabular}{|l|p{1cm}|p{1cm}|}
+\hline
+\textbf{Métrica} & \textbf{Zhang \& Shasha} & \textbf{Guloso} \\
+\hline
+Consumo Médio de Memória(KB) &  0.2931 & 16.75 \\
+\hline
+Média Distância de Edição  & 76.88  &  104.83\\
+\hline
+Tempo Médio de Execução ($\mu$s) & 308  & 1.02 \\
+\hline
+\end{tabular}
+\end{table}
+
+
+A análise dos resultados apresentados na Tabela \ref{tab:analise_comparativa} confirma as expectativas teóricas de desempenho. O guloso se mostrou superior em tempo de execução, sendo significativamente mais rápido. Essa velocidade o torna ideal para lidar com grandes volumes de dados, onde a complexidade cúbica do ZS seria inviável.
+
+Em relação à memória, o ZS consumiu menos para as árvores testadas. Contudo, devido à sua natureza de complexidade quadrática, para árvores muito maiores, o ZS se tornaria insustentável em termos de memória, enquanto o guloso manteria sua eficiência linear $O(\max(|T_1|, |T_2|))$.
+
+A distância de edição média do ZS foi de 76.88, contra 104.83 do guloso, o que quantifica a não-otimalidade do método guloso e mostra que ele sacrifica a precisão pela velocidade.
+
+Em suma, os resultados reforçam o equilíbrio entre otimalidade e eficiência. O ZS é preferível para precisão máxima, enquanto o guloso é a melhor escolha para lidar com grandes volumes de dados, mesmo que com uma solução não-ótima.
+
+%\begin{figure}
+%\begin{center}
+%\includegraphics[width=\columnwidth]{img1.png}
+%\caption{Comparação de Média da Distância de Edição por Algoritmo}\label{Fig1}
+%\end{center}
+%\end{figure}
+
+
+%\begin{figure}
+%\begin{center}
+%\includegraphics[width=\columnwidth]{img4.png}
+%\caption{Comparação de Média de Tempo por Algoritmo}\label{Fig2}
+%\end{center}
+%\end{figure}
+
+\section{Conclusão e Trabalhos Futuros}
+
+Este trabalho analisou e comparou dois algoritmos para o cálculo da distância de edição entre árvores: o algoritmo ótimo de Zhang e Shasha e uma abordagem gulosa implementada em C++. Os resultados mostraram que, embora o algoritmo clássico produza a distância mínima, ele apresenta alto custo computacional para árvores grandes. O algoritmo guloso, por outro lado, alcança complexidade linear e maior eficiência, embora sem garantir otimalidade.
+
+Essa característica o torna mais adequado para aplicações que envolvem grandes volumes de dados, como na bioinformática. Como trabalhos futuros, propõe-se a aplicação dos algoritmos em outros domínios, uma análise mais aprofundada do uso de memória e o desenvolvimento de implementações paralelas, especialmente para o método guloso.
+
+\bibliographystyle{apalike-sol}
+\bibliography{refs}
+
+\end{document}
